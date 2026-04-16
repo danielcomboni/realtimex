@@ -1,0 +1,23 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSE Example</title>
+</head>
+<body>
+    <script>
+        const stream = new EventSource(
+            "http://localhost:7006/api/stream?clientId=dashboard-01"
+        )
+
+        stream.onmessage = (event) => {
+            const data = JSON.parse(event.data)
+            console.log("SSE:", data)
+        }
+
+        stream.onerror = (err) => {
+            console.error("SSE error", err)
+        }
+    </script>
+</body>
+</html>

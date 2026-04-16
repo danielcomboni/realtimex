@@ -1,0 +1,52 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realtime WS</title>
+</head>
+
+<body>
+    <button onclick="sendMessage()">Send Message</button>
+
+    <script>
+        const ws = new WebSocket(
+            "ws://localhost:7006/api/ws?clientId=pos-terminal-01"
+        )
+
+        ws.onopen = () => {
+            console.log("connected")
+        }
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data)
+            console.log("received:", data)
+        }
+
+        function sendMessage() {
+            ws.send(JSON.stringify({
+                type: "client.message",
+                payload: {
+                    text: "Hello from browser"
+                }
+            }))
+        }
+    </script>
+
+    <script>
+        const stream = new EventSource(
+            "http://localhost:7006/api/stream?clientId=dashboard-01"
+        )
+
+        stream.onmessage = (event) => {
+            const data = JSON.parse(event.data)
+            console.log("SSE:", data)
+        }
+
+        stream.onerror = (err) => {
+            console.error("SSE error", err)
+        }
+    </script>
+</body>
+
+</html>
