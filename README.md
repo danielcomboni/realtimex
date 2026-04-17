@@ -27,4 +27,4 @@ Designed for building **POS systems, dashboards, live notifications, chat system
 ## Installation
 
 ```bash
-go get github.com/yourusername/realtimex
+go get github.com/danielcomboni/realtimex
