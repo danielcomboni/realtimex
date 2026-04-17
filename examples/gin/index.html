@@ -9,7 +9,8 @@
 <body>
     <button onclick="sendMessage()">Send Message</button>
 
-    <script>
+    <!-- <script>
+
         const ws = new WebSocket(
             "ws://localhost:7006/api/ws?clientId=pos-terminal-01"
         )
@@ -45,6 +46,88 @@
 
         stream.onerror = (err) => {
             console.error("SSE error", err)
+        }
+    </script> -->
+
+    <button onclick="sendOrder()">Create Order</button>
+
+    <script>
+        const ws = new WebSocket(
+            "ws://localhost:7006/api/ws/orders?clientId=pos-01"
+        )
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data)
+            console.log("POS received:", data)
+        }
+
+        function sendOrder() {
+            console.log("Creating order...")
+            ws.send(JSON.stringify({
+                type: "order.create",
+                payload: {
+                    table: "A1",
+                    items: [
+                        { name: "Burger", qty: 2 }
+                    ]
+                }
+            }))
+        }
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data)
+
+            if (data.type === "order.created") {
+                console.log("Kitchen:", data.payload)
+            }
+        }
+
+        function sendMessage() {
+            ws.send(JSON.stringify({
+                type: "client.message",
+                payload: {
+                    text: "Hello from browser"
+                }
+            }))
+        }
+    </script>
+
+    <!-- <script>
+        const ws = new WebSocket(
+            "ws://localhost:7006/api/ws/orders?clientId=kitchen-01"
+        )
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data)
+
+            if (data.type === "order.created") {
+                console.log("Kitchen:", data.payload)
+            }
+        }
+    </script> -->
+
+    <script>
+
+        // get clientId from URL params
+        const urlParams = new URLSearchParams(window.location.search)
+        const clientId = urlParams.get("clientId") || "dashboard-01"
+
+        const stream = new EventSource(
+            "http://localhost:7006/api/stream/dashboard?clientId=" + clientId
+        )
+
+
+        // setInterval(() => {
+        //     console.log("Dashboard still listening...")
+        // }, 5000)
+        // setInterval(() => {
+        //     console.log("Dashboard still listening...")
+        // }, 1000)
+
+        stream.onmessage = (event) => {
+            const data = JSON.parse(event.data)
+
+            console.log("clientId:",clientId,"Dashboard:", data)
         }
     </script>
 </body>
